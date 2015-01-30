@@ -99,7 +99,7 @@
 }
 
 - (IBAction)copyMatchingAsync:(id)sender {
-    [CCTouchID KCCopyMatchingAsync:DEFAULT_ATTRSERVICE Reason:@"输入密码" Result:^(KeychainStatus status, NSString *msg){
+    [CCTouchID KCCopyMatchingAsync:DEFAULT_ATTRSERVICE Reason:@"验证指纹以继续" Result:^(KeychainStatus status, NSString *msg){
         switch (status) {
             case KeychainStatus_Success: {
                 
@@ -119,11 +119,43 @@
 }
 
 - (IBAction)updateItemAsync:(id)sender {
-    
+    [CCTouchID KCUpdateItemAsync:DEFAULT_ATTRSERVICE NewValueData:@"newValue456" Reason:@"验证指纹以更新密码" Result:^(KeychainStatus status, NSString *msg){
+        switch (status) {
+            case KeychainStatus_Success: {
+                
+            }
+                break;
+            case KeychainStatus_ItemNotFound: {
+                
+            }
+                break;
+                
+                
+            default:
+                break;
+        }
+        [self printResult:logView message:msg];
+    }];
 }
 
 - (IBAction)deleteItemAsync:(id)sender {
-    
+    [CCTouchID KCDeleteItemAsync:DEFAULT_ATTRSERVICE Result:^(KeychainStatus status, NSString *msg){
+        switch (status) {
+            case KeychainStatus_Success: {
+                
+            }
+                break;
+            case KeychainStatus_ItemNotFound: {
+                
+            }
+                break;
+                
+                
+            default:
+                break;
+        }
+        [self printResult:logView message:msg];
+    }];
 }
 
 - (NSString *)getAuthErrorDescription:(NSInteger)code

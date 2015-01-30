@@ -45,5 +45,7 @@ typedef void (^KeychainBlock)(KeychainStatus, NSString *);
 
 +(void) KCAddItemAsync:(NSString *)attrService ValueData:(NSString *)valueData Result:(KeychainBlock)resultBlock;
 +(void) KCCopyMatchingAsync:(NSString *)attrService Reason:(NSString *)reason Result:(KeychainBlock)resultBlock;
++(void) KCUpdateItemAsync:(NSString *)attrService NewValueData:(NSString *)newValueData Reason:(NSString *)reason Result:(KeychainBlock)resultBlock;
++(void) KCDeleteItemAsync:(NSString *)attrService Result:(KeychainBlock)resultBlock;
 
 @end

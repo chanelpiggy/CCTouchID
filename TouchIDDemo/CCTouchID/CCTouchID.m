@@ -24,10 +24,10 @@ KeychainStatus keychainStatus;
     NSError *error;
     BOOL success = [context canEvaluatePolicy: LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
     if (success) {
-        resultBlock(LAEvaluateStatus_Ready, @"TouchID ready");
+        resultBlock(LAEvaluateStatus_Ready, @"LACanEvaluatePolicy: ready");
     }
     else {
-        msg = [ NSString stringWithFormat:@"%@", [self getAuthErrorDescription:error.code]];
+        msg = [ NSString stringWithFormat:@"LACanEvaluatePolicy: %@", [self getAuthErrorDescription:error.code]];
         resultBlock(laEvaluateStatus, msg);
     }
 }
@@ -52,10 +52,10 @@ KeychainStatus keychainStatus;
         [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:reason reply:
          ^(BOOL passed, NSError *authenticationError) {
              if (passed) {
-                 resultBlock(LAEvaluateStatus_AuthenticationSuccess, @"fingerprint authentication success");
+                 resultBlock(LAEvaluateStatus_AuthenticationSuccess, @"LAEvaluatePolicy: success");
              }
              else {
-                 msg = [ NSString stringWithFormat:@"%@", [self getAuthErrorDescription:authenticationError.code]];
+                 msg = [ NSString stringWithFormat:@"LAEvaluatePolicy: %@", [self getAuthErrorDescription:authenticationError.code]];
                  resultBlock(laEvaluateStatus, msg);
 
              }
@@ -78,7 +78,6 @@ KeychainStatus keychainStatus;
     CFErrorRef error = NULL;
     SecAccessControlRef sacObject;
     
-    // Should be the secret invalidated when passcode is removed? If not then use kSecAttrAccessibleWhenUnlocked
     sacObject = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
                                                 kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
                                                 kSecAccessControlUserPresence, &error);
@@ -89,8 +88,6 @@ KeychainStatus keychainStatus;
         return;
     }
     
-    // we want the operation to fail if there is an item which needs authentication so we will use
-    // kSecUseNoAuthenticationUI
     NSDictionary *attributes = @{
                                  (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
                                  (__bridge id)kSecAttrService:attrService,
@@ -101,7 +98,7 @@ KeychainStatus keychainStatus;
     
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OSStatus osstatus =  SecItemAdd((__bridge CFDictionaryRef)attributes, nil);
-        NSString *msg = [self keychainErrorToString:osstatus];
+        NSString *msg = [NSString stringWithFormat:@"add item status: %@", [self keychainErrorToString:osstatus]];
         resultBlock(keychainStatus, msg);
     });
 }
@@ -111,7 +108,7 @@ KeychainStatus keychainStatus;
         return;
     }
     else if (!attrService) {
-        resultBlock(KeychainStatus_ParameterError, @"parameters missing");
+        resultBlock(KeychainStatus_ParameterError, @"parameter missing");
         return;
     }
     else if (!reason) {
@@ -138,6 +135,54 @@ KeychainStatus keychainStatus;
             msg = [NSString stringWithFormat:@"copy matching status: %@", [self keychainErrorToString:status]];
             resultBlock(keychainStatus, msg);
         }
+    });
+}
+
++(void) KCUpdateItemAsync:(NSString *)attrService NewValueData:(NSString *)newValueData Reason:(NSString *)reason Result:(KeychainBlock)resultBlock {
+    if (!resultBlock) {
+        return;
+    }
+    else if (!attrService || !newValueData) {
+        resultBlock(KeychainStatus_ParameterError, @"parameter missing");
+        return;
+    }
+    else if (!reason) {
+        reason = DEFAULT_REASON;
+    }
+    NSDictionary *query = @{
+                            (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+                            (__bridge id)kSecAttrService:attrService,
+                            (__bridge id)kSecUseOperationPrompt:reason
+                            };
+    
+    NSDictionary *changes = @{
+                              (__bridge id)kSecValueData: [newValueData dataUsingEncoding:NSUTF8StringEncoding]
+                              };
+    
+    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        OSStatus status = SecItemUpdate((__bridge CFDictionaryRef)query, (__bridge CFDictionaryRef)changes);
+        NSString *msg = [NSString stringWithFormat:@"update item status: %@", [self keychainErrorToString:status]];
+        resultBlock(keychainStatus, msg);
+    });
+}
+
++(void) KCDeleteItemAsync:(NSString *)attrService Result:(KeychainBlock)resultBlock {
+    if (!resultBlock) {
+        return;
+    }
+    else if (!attrService) {
+        resultBlock(KeychainStatus_ParameterError, @"parameter missing");
+        return;
+    }
+    NSDictionary *query = @{
+                            (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+                            (__bridge id)kSecAttrService:attrService,
+                            };
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        OSStatus status = SecItemDelete((__bridge CFDictionaryRef)(query));
+        NSString *msg = [NSString stringWithFormat:@"delete item status: %@", [self keychainErrorToString:status]];
+        resultBlock(keychainStatus, msg);
     });
 }
 
