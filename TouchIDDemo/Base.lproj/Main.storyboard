@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -17,8 +16,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NGa-Cp-bAL">
-                                <rect key="frame" x="16" y="20" width="106" height="100"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NGa-Cp-bAL">
+                                <rect key="frame" x="16" y="20" width="106" height="61"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="检查是否支持">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -28,8 +27,58 @@
                                     <action selector="canEvaluatePolicy:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="0Uj-Aq-Eod"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8fH-dZ-Unb">
-                                <rect key="frame" x="16" y="146" width="106" height="100"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fQ2-2E-aIQ">
+                                <rect key="frame" x="0.0" y="290" width="600" height="302"/>
+                                <color key="backgroundColor" red="1" green="0.98490963444168955" blue="0.86938912730488216" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rmo-RO-0KQ">
+                                <rect key="frame" x="16" y="89" width="56" height="33"/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="添加">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="addItemAsync:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="s8A-XU-Lkb"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RUG-Cx-b94">
+                                <rect key="frame" x="80" y="89" width="56" height="33"/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="验证">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="copyMatchingAsync:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="ZM7-ne-fyt"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pr9-MR-dcO">
+                                <rect key="frame" x="144" y="89" width="56" height="33"/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="修改">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="updateItemAsync:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="55m-FM-jBx"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H8s-67-5de">
+                                <rect key="frame" x="208" y="89" width="56" height="33"/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="删除">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="deleteItemAsync:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="fj5-C0-6AC"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8fH-dZ-Unb">
+                                <rect key="frame" x="158" y="20" width="106" height="61"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="验证指纹">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -39,27 +88,8 @@
                                     <action selector="evaluatePolicy:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="NKb-8g-f9Q"/>
                                 </connections>
                             </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fQ2-2E-aIQ">
-                                <rect key="frame" x="16" y="290" width="240" height="128"/>
-                                <color key="backgroundColor" red="1" green="0.98490963444168955" blue="0.86938912730488216" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="fQ2-2E-aIQ" secondAttribute="bottom" constant="182" id="E6I-qX-BPj"/>
-                            <constraint firstItem="8fH-dZ-Unb" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="20" id="IBR-zC-f4j"/>
-                            <constraint firstItem="NGa-Cp-bAL" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="20" id="Zbx-24-Yhh"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="8fH-dZ-Unb" secondAttribute="trailing" constant="20" id="bna-dh-zb4"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="NGa-Cp-bAL" secondAttribute="trailing" constant="20" id="cbu-5n-tFk"/>
-                            <constraint firstItem="NGa-Cp-bAL" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="20" id="ljV-1X-JS9"/>
-                            <constraint firstItem="NGa-Cp-bAL" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="100" id="lsW-iE-Dee"/>
-                            <constraint firstItem="8fH-dZ-Unb" firstAttribute="top" secondItem="NGa-Cp-bAL" secondAttribute="bottom" constant="50" id="nNx-0i-Crb"/>
-                            <constraint firstItem="fQ2-2E-aIQ" firstAttribute="top" secondItem="8fH-dZ-Unb" secondAttribute="bottom" constant="20" id="tkY-Nc-Nyp"/>
-                            <constraint firstItem="fQ2-2E-aIQ" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="20" id="wIg-He-Mk6"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="fQ2-2E-aIQ" secondAttribute="trailing" constant="20" id="ztp-Yh-T3a"/>
-                        </constraints>
                     </view>
                     <connections>
                         <outlet property="canEvaluatePolicyButton" destination="NGa-Cp-bAL" id="OcK-97-hzg"/>
@@ -69,6 +99,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="244" y="408"/>
         </scene>
     </scenes>
 </document>

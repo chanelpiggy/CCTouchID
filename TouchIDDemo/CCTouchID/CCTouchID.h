@@ -9,14 +9,41 @@
 #import <Foundation/Foundation.h>
 
 typedef enum{
-    CheckStatus_OK,             //Touch ID is OK
-    CheckStatus_NotEnrolled,    //fingerprints not enrolled
-    CheckStatus_NotAvailable,   //Touch ID is not available in this device
-    CheckStatus_PasscodeNotSet, //Passcode not set
-}CheckStatus;
+    LAEvaluateStatus_Ready,             //TouchID is ready to use
+    LAEvaluateStatus_NotEnrolled,    //fingerprints not enrolled
+    LAEvaluateStatus_NotAvailable,   //TouchID is not available in this device
+    LAEvaluateStatus_PasscodeNotSet,
+    LAEvaluateStatus_SystemCancel,
+    LAEvaluateStatus_UserFallback,
+    LAEvaluateStatus_UserCancel,
+    LAEvaluateStatus_AuthenticationFailed,
+    LAEvaluateStatus_AuthenticationSuccess,
+    LAEvaluateStatus_ParameterError,
+    LAEvaluateStatus_UnknowError,
+}LAEvaluateStatus;
+
+typedef enum{
+    KeychainStatus_Success,
+    KeychainStatus_DuplicateItem,
+    KeychainStatus_ItemNotFound,
+    KeychainStatus_AuthFailed,
+    KeychainStatus_InteractionNotAllowed,
+    KeychainStatus_ParameterError,
+    KeychainStatus_UnknowError,
+}KeychainStatus;
+
+#define DEFAULT_REASON @"Unlock access to locked feature"
+
+typedef void (^LAEvaluateBlock)(LAEvaluateStatus, NSString *);
+typedef void (^KeychainBlock)(KeychainStatus, NSString *);
 
 @interface CCTouchID : NSObject
 
-+(void) checkTouchID;
++(void) LACanEvaluatePolicy:(LAEvaluateBlock)resultBlock;
++(void) LAEvaluatePolicy:(LAEvaluateBlock)resultBlock;
++(void) LAEvaluatePolicy:(NSString *)fallbackTitle Reason:(NSString *)reason Result:(LAEvaluateBlock)resultBlock;
+
++(void) KCAddItemAsync:(NSString *)attrService ValueData:(NSString *)valueData Result:(KeychainBlock)resultBlock;
++(void) KCCopyMatchingAsync:(NSString *)attrService Reason:(NSString *)reason Result:(KeychainBlock)resultBlock;
 
 @end

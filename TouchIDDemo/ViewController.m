@@ -11,6 +11,9 @@
 #import <LocalAuthentication/LAError.h>
 #import "CCTouchID/CCTouchID.h"
 
+#define DEFAULT_ATTRSERVICE @"key123"
+#define DEFAULT_VALUEDATA @"value456"
+
 @interface ViewController () {
     BOOL success;
 }
@@ -24,7 +27,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    evaluatePolicyButton.hidden = YES;
+//    evaluatePolicyButton.hidden = YES;
     
     [logView scrollRangeToVisible:NSMakeRange([logView.text length], 0)];
 
@@ -36,42 +39,91 @@
 }
 
 - (IBAction)canEvaluatePolicy:(id)sender {
-    LAContext *context = [[LAContext alloc] init];
-    __block  NSString *msg;
-    NSError *error;
-    success = [context canEvaluatePolicy: LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
-    if (success) {
-        msg =@"TouchID 支持\n";
-        evaluatePolicyButton.hidden = NO;
-    }
-    else {
-        msg = [ NSString stringWithFormat:@"%@", [self getAuthErrorDescription:error.code]];
-    }
-    [self printResult:logView message:msg];
+    [CCTouchID LACanEvaluatePolicy:^(LAEvaluateStatus status, NSString *msg){
+        if (status == LAEvaluateStatus_Ready) {
+            //do something...
+        }
+        else {
+            //do something...
+        }
+        NSLog(@"%@", msg);
+        [self printResult:logView message:msg];
+    }];
     
 }
 
 - (IBAction)evaluatePolicy:(id)sender {
-    if (success) {
-        LAContext *context = [[LAContext alloc] init];
-        __block  NSString *msg;
-        context.localizedFallbackTitle = @"自定义文本(一般为输入密码)";
-        [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:@"解锁的理由,比如\"使用Touch ID完成支付\"" reply:
-         ^(BOOL passed, NSError *authenticationError) {
-             if (passed) {
-                 msg =@"解锁成功\n";
-             } else {
-                 msg = [ NSString stringWithFormat:@"%@", [self getAuthErrorDescription:authenticationError.code]];
-                 if (authenticationError.code == LAErrorUserFallback) {
-                     [self printResult:logView message:@"用户点击左边的按钮,程序应该在此调起自身的输入密码界面(不是iPhone的锁屏密码界面)"];
-                 }
-             }
-             [self printResult:logView message:msg];
-         }];
-    }
-    else {
-        [self printResult:logView message:@"TouchID 不支持\n"];
-    }
+    [CCTouchID LAEvaluatePolicy:nil Reason:nil Result:^(LAEvaluateStatus status, NSString *msg){
+        switch (status) {
+            case LAEvaluateStatus_AuthenticationSuccess: {
+                
+            }
+                break;
+            case LAEvaluateStatus_UserFallback: {
+                
+            }
+                break;
+            case LAEvaluateStatus_AuthenticationFailed: {
+                
+            }
+                break;
+                
+            default:
+                break;
+        }
+        [self printResult:logView message:msg];
+    }];
+}
+
+- (IBAction)addItemAsync:(id)sender {
+    [CCTouchID KCAddItemAsync:DEFAULT_ATTRSERVICE ValueData:DEFAULT_VALUEDATA Result:^(KeychainStatus status, NSString *msg){
+        switch (status) {
+            case KeychainStatus_Success: {
+                
+            }
+                break;
+            case KeychainStatus_InteractionNotAllowed: {
+                
+            }
+                break;
+            case KeychainStatus_UnknowError: {
+                
+            }
+                break;
+                
+            default:
+                break;
+        }
+        [self printResult:logView message:msg];
+    }];
+}
+
+- (IBAction)copyMatchingAsync:(id)sender {
+    [CCTouchID KCCopyMatchingAsync:DEFAULT_ATTRSERVICE Reason:@"输入密码" Result:^(KeychainStatus status, NSString *msg){
+        switch (status) {
+            case KeychainStatus_Success: {
+                
+            }
+                break;
+            case KeychainStatus_AuthFailed: {
+                
+            }
+                break;
+
+                
+            default:
+                break;
+        }
+        [self printResult:logView message:msg];
+    }];
+}
+
+- (IBAction)updateItemAsync:(id)sender {
+    
+}
+
+- (IBAction)deleteItemAsync:(id)sender {
+    
 }
 
 - (NSString *)getAuthErrorDescription:(NSInteger)code
