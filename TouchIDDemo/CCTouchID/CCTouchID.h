@@ -10,11 +10,11 @@
 
 typedef enum{
     LAEvaluateStatus_Ready,             //TouchID is ready to use
-    LAEvaluateStatus_NotEnrolled,    //fingerprints not enrolled
-    LAEvaluateStatus_NotAvailable,   //TouchID is not available in this device
+    LAEvaluateStatus_NotEnrolled,       //fingerprints not enrolled
+    LAEvaluateStatus_NotAvailable,      //TouchID is not available in this device
     LAEvaluateStatus_PasscodeNotSet,
     LAEvaluateStatus_SystemCancel,
-    LAEvaluateStatus_UserFallback,
+    LAEvaluateStatus_UserFallback,      //user press fallback button
     LAEvaluateStatus_UserCancel,
     LAEvaluateStatus_AuthenticationFailed,
     LAEvaluateStatus_AuthenticationSuccess,
@@ -32,7 +32,7 @@ typedef enum{
     KeychainStatus_UnknowError,
 }KeychainStatus;
 
-#define DEFAULT_REASON @"Unlock access to locked feature"
+#define DEFAULT_REASON @"Unlock to access locked feature"
 
 typedef void (^LAEvaluateBlock)(LAEvaluateStatus, NSString *);
 typedef void (^KeychainBlock)(KeychainStatus, NSString *);
