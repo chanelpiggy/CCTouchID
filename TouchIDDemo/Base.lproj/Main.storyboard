@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -38,12 +39,6 @@
                                     <action selector="evaluatePolicy:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="NKb-8g-f9Q"/>
                                 </connections>
                             </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fQ2-2E-aIQ">
-                                <rect key="frame" x="0.0" y="238" width="600" height="354"/>
-                                <color key="backgroundColor" red="1" green="0.98490963444168955" blue="0.86938912730488216" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rmo-RO-0KQ">
                                 <rect key="frame" x="61" y="186" width="56" height="33"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -88,9 +83,17 @@
                                     <action selector="deleteItemAsync:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="fj5-C0-6AC"/>
                                 </connections>
                             </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fQ2-2E-aIQ">
+                                <rect key="frame" x="0.0" y="238" width="600" height="354"/>
+                                <color key="backgroundColor" red="1" green="0.98490963444168955" blue="0.86938912730488216" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="fQ2-2E-aIQ" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="16" id="0FL-Jz-ICQ"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="fQ2-2E-aIQ" secondAttribute="trailing" constant="16" id="7f1-z2-sen"/>
                             <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="fQ2-2E-aIQ" secondAttribute="bottom" id="XfC-Zk-cPT"/>
                         </constraints>
                     </view>

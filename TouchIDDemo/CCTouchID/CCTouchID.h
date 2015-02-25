@@ -78,7 +78,7 @@ typedef void (^KeychainBlock)(KeychainStatus, NSString *);
 +(void) KCAddItemAsync:(NSString *)attrService ValueData:(NSString *)valueData Result:(KeychainBlock)resultBlock;
 
 /**
- *  验证KeyChain中的key-value
+ *  验证/读取KeyChain中的key-value
  *
  *  @param attrService key
  *  @param valueData   value
