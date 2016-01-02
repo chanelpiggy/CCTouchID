@@ -14,74 +14,74 @@
 
 #import <Foundation/Foundation.h>
 
-typedef enum{
-    LAEvaluateStatus_Ready,             //TouchID is ready to use
-    LAEvaluateStatus_NotEnrolled,       //fingerprints not enrolled
-    LAEvaluateStatus_NotAvailable,      //TouchID is not available in this device
-    LAEvaluateStatus_PasscodeNotSet,
-    LAEvaluateStatus_SystemCancel,
-    LAEvaluateStatus_UserFallback,      //user press fallback button
-    LAEvaluateStatus_UserCancel,
-    LAEvaluateStatus_AuthenticationFailed,
-    LAEvaluateStatus_AuthenticationSuccess,
-    LAEvaluateStatus_ParameterError,
-    LAEvaluateStatus_UnknowError,
-}LAEvaluateStatus;
+typedef NS_ENUM(NSUInteger, LocalAuth){
+    LocalAuthReady,             //TouchID is ready to use
+    LocalAuthNotEnrolled,       //fingerprints not enrolled
+    LocalAuthNotAvailable,      //TouchID is not available in this device
+    LocalAuthPasscodeNotSet,
+    LocalAuthSystemCancel,
+    LocalAuthUserFallback,      //user press fallback button
+    LocalAuthUserCancel,
+    LocalAuthFailed,
+    LocalAuthSuccess,
+    LocalAuthParameterError,
+    LocalAuthUnknowError,
+};
 
-typedef enum{
-    KeychainStatus_Success,
-    KeychainStatus_DuplicateItem,
-    KeychainStatus_ItemNotFound,
-    KeychainStatus_AuthFailed,
-    KeychainStatus_InteractionNotAllowed,
-    KeychainStatus_ParameterError,
-    KeychainStatus_UnknowError,
-}KeychainStatus;
+typedef NS_ENUM(NSUInteger, Keychain){
+    KeychainSuccess,
+    KeychainDuplicateItem,
+    KeychainItemNotFound,
+    KeychainAuthFailed,
+    KeychainInteractionNotAllowed,
+    KeychainParameterError,
+    KeychainUnknowError,
+};
 
-#define DEFAULT_REASON @"Unlock to access locked feature"
+#define DEFAULT_REASON @"Unlock to access more features"
 
-typedef void (^LAEvaluateBlock)(LAEvaluateStatus, NSString *);
-typedef void (^KeychainBlock)(KeychainStatus, NSString *);
+typedef void (^LocalAuthBlock)(LocalAuth, NSString *);
+typedef void (^KeychainBlock)(Keychain, NSString *);
 
 @interface CCTouchID : NSObject
 
 /**
-*  验证是否支持指纹验证
+*  检查设备是否支持指纹验证
 *
 *  @param resultBlock 响应block
 */
-+(void) LACanEvaluatePolicy:(LAEvaluateBlock)resultBlock;
++(void) LACanEvaluatePolicy:(LocalAuthBlock)resultBlock;
 
 /**
  *  验证指纹
  *
  *  @param resultBlock 响应block
  */
-+(void) LAEvaluatePolicy:(LAEvaluateBlock)resultBlock;
++(void) LocalAuthPolicy:(LocalAuthBlock)resultBlock;
 
 /**
  *  验证指纹(自定义提示文字)
  *
  *  @param fallbackTitle fallback按钮文字
- *  @param reason        验证指纹的原因(如验证指纹以登录)
+ *  @param reason        验证指纹的原因(如"验证指纹以登录")
  *  @param resultBlock   响应block
  */
-+(void) LAEvaluatePolicy:(NSString *)fallbackTitle Reason:(NSString *)reason Result:(LAEvaluateBlock)resultBlock;
++(void) LocalAuthPolicy:(NSString *)fallbackTitle Reason:(NSString *)reason Result:(LocalAuthBlock)resultBlock;
 
 /**
  *  向KeyChain中添加key-value
  *
- *  @param attrService key
- *  @param valueData   value
- *  @param resultBlock 响应block
+ *  @param attrService  key
+ *  @param value        value
+ *  @param resultBlock  响应block
  */
-+(void) KCAddItemAsync:(NSString *)attrService ValueData:(NSString *)valueData Result:(KeychainBlock)resultBlock;
++(void) KCAddItemAsync:(NSString *)attrService Value:(NSString *)value Result:(KeychainBlock)resultBlock;
 
 /**
  *  验证/读取KeyChain中的key-value
  *
  *  @param attrService key
- *  @param valueData   value
+ *  @param reason      验证指纹的原因
  *  @param resultBlock 响应block
  */
 +(void) KCCopyMatchingAsync:(NSString *)attrService Reason:(NSString *)reason Result:(KeychainBlock)resultBlock;
@@ -90,11 +90,11 @@ typedef void (^KeychainBlock)(KeychainStatus, NSString *);
  *  更新KeyChain中的key-value
  *
  *  @param attrService  key
- *  @param newValueData new value
+ *  @param newValue     new value
  *  @param reason       验证指纹的原因(如验证指纹以更改密码)
  *  @param resultBlock  响应block
  */
-+(void) KCUpdateItemAsync:(NSString *)attrService NewValueData:(NSString *)newValueData Reason:(NSString *)reason Result:(KeychainBlock)resultBlock;
++(void) KCUpdateItemAsync:(NSString *)attrService NewValue:(NSString *)newValue Reason:(NSString *)reason Result:(KeychainBlock)resultBlock;
 
 /**
  *  删除KeyChain中的key-value

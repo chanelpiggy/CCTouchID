@@ -10,12 +10,12 @@
 #import <LocalAuthentication/LAContext.h>
 #import <LocalAuthentication/LAError.h>
 
-LAEvaluateStatus laEvaluateStatus;
-KeychainStatus keychainStatus;
+LocalAuth localAuth;
+Keychain keychain;
 
 @implementation CCTouchID
 
-+(void) LACanEvaluatePolicy:(LAEvaluateBlock)resultBlock {
++(void) LACanEvaluatePolicy:(LocalAuthBlock)resultBlock {
     if (!resultBlock) {
         return;
     }
@@ -24,19 +24,19 @@ KeychainStatus keychainStatus;
     NSError *error;
     BOOL success = [context canEvaluatePolicy: LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
     if (success) {
-        resultBlock(LAEvaluateStatus_Ready, @"LACanEvaluatePolicy: ready");
+        resultBlock(LocalAuthReady, @"LocalAuthReady: ready");
     }
     else {
-        msg = [ NSString stringWithFormat:@"LACanEvaluatePolicy: %@", [self getAuthErrorDescription:error.code]];
-        resultBlock(laEvaluateStatus, msg);
+        msg = [ NSString stringWithFormat:@"LocalAuthReady: %@", [self getAuthErrorDescription:error.code]];
+        resultBlock(localAuth, msg);
     }
 }
 
-+(void) LAEvaluatePolicy:(LAEvaluateBlock)resultBlock {
-    [self LAEvaluatePolicy:nil Reason:nil Result:resultBlock];
++(void) LocalAuthPolicy:(LocalAuthBlock)resultBlock {
+    [self LocalAuthPolicy:nil Reason:nil Result:resultBlock];
 }
 
-+(void) LAEvaluatePolicy:(NSString *)fallbackTitle Reason:(NSString *)reason Result:(LAEvaluateBlock)resultBlock {
++(void) LocalAuthPolicy:(NSString *)fallbackTitle Reason:(NSString *)reason Result:(LocalAuthBlock)resultBlock {
     if (!resultBlock) {
         return;
     }
@@ -52,27 +52,27 @@ KeychainStatus keychainStatus;
         [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:reason reply:
          ^(BOOL passed, NSError *authenticationError) {
              if (passed) {
-                 resultBlock(LAEvaluateStatus_AuthenticationSuccess, @"LAEvaluatePolicy: success");
+                 resultBlock(LocalAuthSuccess, @"LocalAuthPolicy: success");
              }
              else {
-                 msg = [ NSString stringWithFormat:@"LAEvaluatePolicy: %@", [self getAuthErrorDescription:authenticationError.code]];
-                 resultBlock(laEvaluateStatus, msg);
+                 msg = [ NSString stringWithFormat:@"LocalAuthPolicy: %@", [self getAuthErrorDescription:authenticationError.code]];
+                 resultBlock(localAuth, msg);
 
              }
          }];
     }
     else {
         msg = [ NSString stringWithFormat:@"%@", [self getAuthErrorDescription:error.code]];
-        resultBlock(laEvaluateStatus, msg);
+        resultBlock(localAuth, msg);
     }
 }
 
-+(void) KCAddItemAsync:(NSString *)attrService ValueData:(NSString *)valueData Result:(KeychainBlock)resultBlock {
++(void) KCAddItemAsync:(NSString *)attrService Value:(NSString *)value Result:(KeychainBlock)resultBlock {
     if (!resultBlock) {
         return;
     }
-    else if (!attrService || !valueData) {
-        resultBlock(KeychainStatus_ParameterError, @"parameters missing");
+    else if (!attrService || !value) {
+        resultBlock(KeychainParameterError, @"parameters missing");
         return;
     }
     CFErrorRef error = NULL;
@@ -80,26 +80,27 @@ KeychainStatus keychainStatus;
     
     sacObject = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
                                                 kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
-                                                kSecAccessControlUserPresence, &error);
+                                                kSecAccessControlUserPresence,
+                                                &error);
     if(sacObject == NULL || error != NULL)
     {
         NSLog(@"can't create sacObject: %@", error);
-        resultBlock(KeychainStatus_UnknowError, [NSString stringWithFormat:@"can't create sacObject:%@", error]);
+        resultBlock(KeychainUnknowError, [NSString stringWithFormat:@"can't create sacObject:%@", error]);
         return;
     }
     
     NSDictionary *attributes = @{
                                  (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
                                  (__bridge id)kSecAttrService:attrService,
-                                 (__bridge id)kSecValueData: [valueData dataUsingEncoding:NSUTF8StringEncoding],
+                                 (__bridge id)kSecValueData: [value dataUsingEncoding:NSUTF8StringEncoding],
                                  (__bridge id)kSecUseNoAuthenticationUI: @YES,
                                  (__bridge id)kSecAttrAccessControl: (__bridge_transfer id)sacObject
                                  };
     
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OSStatus osstatus =  SecItemAdd((__bridge CFDictionaryRef)attributes, nil);
-        NSString *msg = [NSString stringWithFormat:@"add item status: %@", [self keychainErrorToString:osstatus]];
-        resultBlock(keychainStatus, msg);
+        NSString *msg = [NSString stringWithFormat:@"add item result: %@", [self keychainErrorToString:osstatus]];
+        resultBlock(keychain, msg);
     });
 }
 
@@ -108,7 +109,7 @@ KeychainStatus keychainStatus;
         return;
     }
     else if (!attrService) {
-        resultBlock(KeychainStatus_ParameterError, @"parameter missing");
+        resultBlock(KeychainParameterError, @"parameter missing");
         return;
     }
     else if (!reason) {
@@ -129,21 +130,21 @@ KeychainStatus keychainStatus;
         if (status == errSecSuccess) {
             NSData *resultData = ( __bridge_transfer NSData *)dataTypeRef;
             NSString * result = [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
-            resultBlock(KeychainStatus_Success, result);
+            resultBlock(KeychainSuccess, result);
         }
         else {
-            msg = [NSString stringWithFormat:@"copy matching status: %@", [self keychainErrorToString:status]];
-            resultBlock(keychainStatus, msg);
+            msg = [NSString stringWithFormat:@"copy matching result: %@", [self keychainErrorToString:status]];
+            resultBlock(keychain, msg);
         }
     });
 }
 
-+(void) KCUpdateItemAsync:(NSString *)attrService NewValueData:(NSString *)newValueData Reason:(NSString *)reason Result:(KeychainBlock)resultBlock {
++(void) KCUpdateItemAsync:(NSString *)attrService NewValue:(NSString *)newValue Reason:(NSString *)reason Result:(KeychainBlock)resultBlock {
     if (!resultBlock) {
         return;
     }
-    else if (!attrService || !newValueData) {
-        resultBlock(KeychainStatus_ParameterError, @"parameter missing");
+    else if (!attrService || !newValue) {
+        resultBlock(KeychainParameterError, @"parameter missing");
         return;
     }
     else if (!reason) {
@@ -156,13 +157,13 @@ KeychainStatus keychainStatus;
                             };
     
     NSDictionary *changes = @{
-                              (__bridge id)kSecValueData: [newValueData dataUsingEncoding:NSUTF8StringEncoding]
+                              (__bridge id)kSecValueData: [newValue dataUsingEncoding:NSUTF8StringEncoding]
                               };
     
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OSStatus status = SecItemUpdate((__bridge CFDictionaryRef)query, (__bridge CFDictionaryRef)changes);
         NSString *msg = [NSString stringWithFormat:@"update item status: %@", [self keychainErrorToString:status]];
-        resultBlock(keychainStatus, msg);
+        resultBlock(keychain, msg);
     });
 }
 
@@ -171,7 +172,7 @@ KeychainStatus keychainStatus;
         return;
     }
     else if (!attrService) {
-        resultBlock(KeychainStatus_ParameterError, @"parameter missing");
+        resultBlock(KeychainParameterError, @"parameter missing");
         return;
     }
     NSDictionary *query = @{
@@ -181,8 +182,8 @@ KeychainStatus keychainStatus;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OSStatus status = SecItemDelete((__bridge CFDictionaryRef)(query));
-        NSString *msg = [NSString stringWithFormat:@"delete item status: %@", [self keychainErrorToString:status]];
-        resultBlock(keychainStatus, msg);
+        NSString *msg = [NSString stringWithFormat:@"delete item result: %@", [self keychainErrorToString:status]];
+        resultBlock(keychain, msg);
     });
 }
 
@@ -190,45 +191,44 @@ KeychainStatus keychainStatus;
 {
     NSString *msg = @"";
     switch (code) {
-        case LAErrorTouchIDNotEnrolled:
-            //认证不能开始,因为touch id没有录入指纹.
-            laEvaluateStatus = LAEvaluateStatus_NotEnrolled;
+        case LAErrorTouchIDNotEnrolled: //认证不能开始,因为touch id没有录入指纹.
+            localAuth = LocalAuthNotEnrolled;
             msg = @"fingerprints not enrolled";
             break;
-        case LAErrorTouchIDNotAvailable:
-            //认证不能开始,因为touch id在此台设备尚是无效的.
-            laEvaluateStatus = LAEvaluateStatus_NotAvailable;
+            
+        case LAErrorTouchIDNotAvailable:    //认证不能开始,因为touch id在此台设备尚是无效的.
+            localAuth = LocalAuthNotAvailable;
             msg = @"TouchID not available";
             break;
-        case LAErrorPasscodeNotSet:
-            //认证不能开始,因为此台设备没有设置密码.
-            laEvaluateStatus = LAEvaluateStatus_PasscodeNotSet;
+            
+        case LAErrorPasscodeNotSet: //认证不能开始,因为此台设备没有设置密码.
+            localAuth = LocalAuthPasscodeNotSet;
             msg = @"passcode not set";
             break;
-        case LAErrorSystemCancel:
-            //认证被系统取消了,例如其他的应用程序到前台了
-            laEvaluateStatus = LAEvaluateStatus_SystemCancel;
+            
+        case LAErrorSystemCancel:   //认证被系统取消了,例如其他的应用程序到前台了
+            localAuth = LocalAuthSystemCancel;
             msg = @"system cancel";
             break;
-        case LAErrorUserFallback:
-            //认证被取消,因为用户点击了fallback按钮(输入密码).
-            laEvaluateStatus = LAEvaluateStatus_UserFallback;
+            
+        case LAErrorUserFallback:   //认证被取消,因为用户点击了fallback按钮(输入密码).
+            localAuth = LocalAuthUserFallback;
             msg = @"user fallback";
             break;
-        case LAErrorUserCancel:
-            //认证被用户取消,例如点击了cancel按钮.
-            laEvaluateStatus = LAEvaluateStatus_UserCancel;
+            
+        case LAErrorUserCancel: //认证被用户取消,例如点击了cancel按钮.
+            localAuth = LocalAuthUserCancel;
             msg = @"user cancel";
             break;
-        case LAErrorAuthenticationFailed:
-            //认证没有成功,因为用户没有成功的提供一个有效的认证资格
-            laEvaluateStatus = LAEvaluateStatus_AuthenticationFailed;
+            
+        case LAErrorAuthenticationFailed:   //认证没有成功,因为用户没有成功的提供一个有效的认证资格
+            localAuth = LocalAuthFailed;
             msg = @"authentication failed";
             break;
 
         default:
             msg = @"unkown error";
-            laEvaluateStatus = LAEvaluateStatus_UnknowError;
+            localAuth = LocalAuthUnknowError;
             break;
     }
     return msg;
@@ -242,28 +242,32 @@ KeychainStatus keychainStatus;
     switch (error) {
         case errSecSuccess:
             msg = @"success";
-            keychainStatus = KeychainStatus_Success;
+            keychain = KeychainSuccess;
             break;
+            
         case errSecDuplicateItem:
             msg = @"item already exists";
-            keychainStatus = KeychainStatus_DuplicateItem;
+            keychain = KeychainDuplicateItem;
             break;
+            
         case errSecItemNotFound :
             msg = @"item not found";
-            keychainStatus = KeychainStatus_ItemNotFound;
+            keychain = KeychainItemNotFound;
             break;
+            
         case errSecAuthFailed:
             msg = @"authentication failed";
-            keychainStatus = KeychainStatus_AuthFailed;
+            keychain = KeychainAuthFailed;
             break;
+            
         case errSecInteractionNotAllowed:
             msg = @"interaction not allowed";
-            keychainStatus = KeychainStatus_InteractionNotAllowed;  //待定,这个状态发生在已经add过相同item情况下
+            keychain = KeychainInteractionNotAllowed;  //待定,这个状态发生在已经add过相同item情况下
             break;
             
         default:
             msg = @"unkown error";
-            keychainStatus = KeychainStatus_UnknowError;
+            keychain = KeychainUnknowError;
             break;
     }
     return msg;

@@ -12,7 +12,7 @@
 #import "CCTouchID/CCTouchID.h"
 
 #define DEFAULT_ATTRSERVICE @"key123"
-#define DEFAULT_VALUEDATA @"value456"
+#define DEFAULT_Value @"value456"
 
 @interface ViewController () {
     BOOL success;
@@ -39,8 +39,8 @@
 }
 
 - (IBAction)canEvaluatePolicy:(id)sender {
-    [CCTouchID LACanEvaluatePolicy:^(LAEvaluateStatus status, NSString *msg){
-        if (status == LAEvaluateStatus_Ready) {
+    [CCTouchID LACanEvaluatePolicy:^(LocalAuth status, NSString *msg){
+        if (status == LocalAuthReady) {
             //do something...
         }
         else {
@@ -53,17 +53,17 @@
 }
 
 - (IBAction)evaluatePolicy:(id)sender {
-    [CCTouchID LAEvaluatePolicy:nil Reason:nil Result:^(LAEvaluateStatus status, NSString *msg){
+    [CCTouchID LocalAuthPolicy:nil Reason:nil Result:^(LocalAuth status, NSString *msg){
         switch (status) {
-            case LAEvaluateStatus_AuthenticationSuccess: {
+            case LocalAuthSuccess: {
                 
             }
                 break;
-            case LAEvaluateStatus_UserFallback: {
+            case LocalAuthUserFallback: {
                 
             }
                 break;
-            case LAEvaluateStatus_AuthenticationFailed: {
+            case LocalAuthFailed: {
                 
             }
                 break;
@@ -76,17 +76,17 @@
 }
 
 - (IBAction)addItemAsync:(id)sender {
-    [CCTouchID KCAddItemAsync:DEFAULT_ATTRSERVICE ValueData:DEFAULT_VALUEDATA Result:^(KeychainStatus status, NSString *msg){
+    [CCTouchID KCAddItemAsync:DEFAULT_ATTRSERVICE Value:DEFAULT_Value Result:^(Keychain status, NSString *msg){
         switch (status) {
-            case KeychainStatus_Success: {
+            case KeychainSuccess: {
                 
             }
                 break;
-            case KeychainStatus_InteractionNotAllowed: {
+            case KeychainInteractionNotAllowed: {
                 
             }
                 break;
-            case KeychainStatus_UnknowError: {
+            case KeychainUnknowError: {
                 
             }
                 break;
@@ -99,13 +99,13 @@
 }
 
 - (IBAction)copyMatchingAsync:(id)sender {
-    [CCTouchID KCCopyMatchingAsync:DEFAULT_ATTRSERVICE Reason:@"验证指纹以继续" Result:^(KeychainStatus status, NSString *msg){
+    [CCTouchID KCCopyMatchingAsync:DEFAULT_ATTRSERVICE Reason:@"验证指纹以继续" Result:^(Keychain status, NSString *msg){
         switch (status) {
-            case KeychainStatus_Success: {
+            case KeychainSuccess: {
                 
             }
                 break;
-            case KeychainStatus_AuthFailed: {
+            case KeychainAuthFailed: {
                 
             }
                 break;
@@ -119,13 +119,13 @@
 }
 
 - (IBAction)updateItemAsync:(id)sender {
-    [CCTouchID KCUpdateItemAsync:DEFAULT_ATTRSERVICE NewValueData:@"newValue456" Reason:@"验证指纹以更新密码" Result:^(KeychainStatus status, NSString *msg){
+    [CCTouchID KCUpdateItemAsync:DEFAULT_ATTRSERVICE NewValue:@"newValue456" Reason:@"验证指纹以更新密码" Result:^(Keychain status, NSString *msg){
         switch (status) {
-            case KeychainStatus_Success: {
+            case KeychainSuccess: {
                 
             }
                 break;
-            case KeychainStatus_ItemNotFound: {
+            case KeychainItemNotFound: {
                 
             }
                 break;
@@ -139,13 +139,13 @@
 }
 
 - (IBAction)deleteItemAsync:(id)sender {
-    [CCTouchID KCDeleteItemAsync:DEFAULT_ATTRSERVICE Result:^(KeychainStatus status, NSString *msg){
+    [CCTouchID KCDeleteItemAsync:DEFAULT_ATTRSERVICE Result:^(Keychain status, NSString *msg){
         switch (status) {
-            case KeychainStatus_Success: {
+            case KeychainSuccess: {
                 
             }
                 break;
-            case KeychainStatus_ItemNotFound: {
+            case KeychainItemNotFound: {
                 
             }
                 break;
